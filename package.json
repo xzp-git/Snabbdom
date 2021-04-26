@@ -51,7 +51,7 @@
     "eslint-plugin-standard": "4.0.1",
     "faker": "5.1.0",
     "globby": "11.0.1",
-    "husky": "4.3.0",
+    "husky": "^4.3.0",
     "is-path-inside": "3.0.2",
     "karma": "5.2.2",
     "karma-browserstack-launcher": "1.6.0",
@@ -126,12 +126,6 @@
     }
   },
   "homepage": "https://github.com/snabbdom/snabbdom#readme",
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint --config commitlint.config.json -E HUSKY_GIT_PARAMS",
-      "pre-commit": "run-s docs check-clean test"
-    }
-  },
   "files": [
     "/build/package/h.d.ts",
     "/build/package/h.js",
