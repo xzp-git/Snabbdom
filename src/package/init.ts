@@ -86,6 +86,7 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
   }
 
   function createElm (vnode: VNode, insertedVnodeQueue: VNodeQueue): Node {
+    // 执行用户设置的 init 钩子函数
     let i: any
     let data = vnode.data
     if (data !== undefined) {
@@ -97,12 +98,16 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
     }
     const children = vnode.children
     const sel = vnode.sel
+    // 把 vnode转换成真实的DOM对象（没有渲染到页面）
     if (sel === '!') {
+      // 如果选择器是!,创建注释节点
       if (isUndef(vnode.text)) {
         vnode.text = ''
       }
       vnode.elm = api.createComment(vnode.text!)
     } else if (sel !== undefined) {
+      // 如果选择器不为空
+      // 解析选择器
       // Parse selector
       const hashIdx = sel.indexOf('#')
       const dotIdx = sel.indexOf('.', hashIdx)
@@ -115,6 +120,7 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
       if (hash < dot) elm.setAttribute('id', sel.slice(hash + 1, dot))
       if (dotIdx > 0) elm.setAttribute('class', sel.slice(dot + 1).replace(/\./g, ' '))
       for (i = 0; i < cbs.create.length; ++i) cbs.create[i](emptyNode, vnode)
+      // 如果vnode中有子节点，创建子vnode对应的DOM元素并追加到Dom树上
       if (is.array(children)) {
         for (i = 0; i < children.length; ++i) {
           const ch = children[i]
@@ -133,8 +139,10 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
         }
       }
     } else {
+      // 如果选择器为空，创建文本节点
       vnode.elm = api.createTextNode(vnode.text!)
     }
+    // 返回新创建的DOM
     return vnode.elm
   }
 
@@ -272,6 +280,7 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
   }
 
   function patchVnode (oldVnode: VNode, vnode: VNode, insertedVnodeQueue: VNodeQueue) {
+    // 第一个过程：触发prepatch和update钩子函数
     const hook = vnode.data?.hook
     hook?.prepatch?.(oldVnode, vnode)
     const elm = vnode.elm = oldVnode.elm!
@@ -282,6 +291,7 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
       for (let i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       vnode.data.hook?.update?.(oldVnode, vnode)
     }
+    // 第二个过程：真正对比新旧vnode差异的地方
     if (isUndef(vnode.text)) {
       if (isDef(oldCh) && isDef(ch)) {
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue)
@@ -299,6 +309,7 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
       }
       api.setTextContent(elm, vnode.text!)
     }
+    // 第三个过程 触发postpatch钩子函数
     hook?.postpatch?.(oldVnode, vnode)
   }
 
