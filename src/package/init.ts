@@ -209,19 +209,19 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
     oldCh: VNode[],
     newCh: VNode[],
     insertedVnodeQueue: VNodeQueue) {
-    let oldStartIdx = 0
-    let newStartIdx = 0
-    let oldEndIdx = oldCh.length - 1
-    let oldStartVnode = oldCh[0]
-    let oldEndVnode = oldCh[oldEndIdx]
-    let newEndIdx = newCh.length - 1
-    let newStartVnode = newCh[0]
-    let newEndVnode = newCh[newEndIdx]
+    let oldStartIdx = 0 //旧开始节点的索引
+    let newStartIdx = 0 //新开始节点的索引
+    let oldEndIdx = oldCh.length - 1 //旧结束节点的索引
+    let oldStartVnode = oldCh[0] //旧开始节点
+    let oldEndVnode = oldCh[oldEndIdx] //旧结束节点
+    let newEndIdx = newCh.length - 1//新结束节点的索引
+    let newStartVnode = newCh[0]//新开始节点
+    let newEndVnode = newCh[newEndIdx]//新结束节点
     let oldKeyToIdx: KeyToIndexMap | undefined
     let idxInOld: number
     let elmToMove: VNode
     let before: any
-
+    // 同级别节点的比较
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
       if (oldStartVnode == null) {
         oldStartVnode = oldCh[++oldStartIdx] // Vnode might have been moved left
@@ -231,6 +231,7 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
         newStartVnode = newCh[++newStartIdx]
       } else if (newEndVnode == null) {
         newEndVnode = newCh[--newEndIdx]
+        // 比较开始和结束的四种情况
       } else if (sameVnode(oldStartVnode, newStartVnode)) {
         patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue)
         oldStartVnode = oldCh[++oldStartIdx]
@@ -269,6 +270,7 @@ export function init (modules: Array<Partial<Module>>, domApi?: DOMAPI) {
         newStartVnode = newCh[++newStartIdx]
       }
     }
+    // 循环结束的收尾工作
     if (oldStartIdx <= oldEndIdx || newStartIdx <= newEndIdx) {
       if (oldStartIdx > oldEndIdx) {
         before = newCh[newEndIdx + 1] == null ? null : newCh[newEndIdx + 1].elm
